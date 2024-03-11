@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+    .domain {
+        display: none;
+    }
+
+    .tick {
+        stroke-width: 2px;
+    }
+
+    .tick text {
+        font-size: 20px;
+        font-family: serif;
+    }
+</style>
+
+<body>
+    <h1>Tufte Line Plot - Desde el primer ordenador personal hasta hoy</h1>
+</body>
+<script>
+    const width = 800,
+        height = 600;
+    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+    d3.csv("./cpu.csv").then(data => {
+        data.forEach(d => {
+            d.cpu = parseFloat(d.cpu);
+            d.year = parseInt(d.year);
+        });
+        const x = d3.scaleLinear()
+            .domain(d3.extent(data, d => d.year))
+            .range([100, width - 25]);
+        const y = d3.scaleLinear()
+            .domain(d3.extent(data, d => d.cpu))
+            .range([height - 50, 25]).nice();
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1)
+            .attr("d", d3.line()
+                .x(d => x(d.year))
+                .y(d => y(d.cpu))
+            );
+        svg.selectAll("circle")
+            .data(data)
+            .join(
+                enter => enter.append("circle")
+                .attr("stroke", "white")
+                .attr("stroke-width", 5)
+                .attr("r", 8)
+                .attr("fill", "black")
+                .attr("cx", d => x(d.year))
+                .attr("cy", d => y(d.cpu))
+            );
+        const xAxis = svg.append("g")
+            .attr("transform", `translate(0,${height-25})`)
+            .call(d3.axisBottom(x).tickFormat(d => d));
+        const yAxis = svg.append("g")
+            .attr("transform", `translate(75,0)`)
+            .call(d3.axisLeft(y).tickFormat(d => `$${d}`));
+        svg.append("text")
+            .attr("x", width * 0.5)
+            .attr("y", height * 0.75)
+            .attr("font-size", 20)
+            .text("CPUs construidas por década en millones de unidades");
+    });
+</script>
+
+</html>
