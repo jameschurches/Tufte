@@ -60,7 +60,7 @@
             .call(d3.axisBottom(x).tickFormat(d => d));
         const yAxis = svg.append("g")
             .attr("transform", `translate(75,0)`)
-            .call(d3.axisLeft(y).tickFormat(d => `$${d}`));
+            .call(d3.axisLeft(y).tickFormat(d => d));
         svg.append("text")
             .attr("x", width * 0.25)
             .attr("y", height * 0.50)
